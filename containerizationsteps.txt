@@ -14,5 +14,13 @@ docker-compose up
 docker container ls -a
 #when containers are up go to browser
 http://localhost:7072/swagger-ui.html --> to open api doc  
-  
+
+#to check tables in mysql
+docker exec -it <containerid> bin/bash
+#mysql -p
+#supply the password
+#show databses;
+#to access specific db
+use accpatientdb;
+#show tables;
 

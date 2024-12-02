@@ -9,7 +9,9 @@ public interface PatientService {
     Patient addPatient(Patient patient);
     List<Patient> getAllPatients();
     Patient getPatientById(long patientId);
-    Patient getPatientByContactNo(long contactNo);
+    List<Patient> getPatientByContactNo(long contactNo);
+
+    Patient updateContactNo(long patientId, long newContactNo);
 
     boolean deletePatientById(long patientId);
 }

@@ -23,4 +23,9 @@ docker exec -it <containerid> bin/bash
 #to access specific db
 use accpatientdb;
 #show tables;
+#to push images to docker hub
+docker login
+docker tag <imgname>:latest <dockerhubid>/<dockerhubreponame>:imagename
+docker push <dockerhubid>/<dockerhubreponame>:imagename
+
 

@@ -1,0 +1,14 @@
+#add docker file at project level
+#for multiple containers add docker-compose file @ project level
+# match application.properties db connection string with docker container service name and password
+# go to project folder in cmd
+#create docker image for project
+docker build -f dockerfile -t <imagename> .
+#start the containers
+docker-compose up
+#to list all containers
+docker container ls -a
+#when containers are up go to browser
+http://localhost:7072/swagger-ui.html --> to open api doc  
+  
+

@@ -9,10 +9,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("patients")
@@ -46,6 +45,31 @@ public class PatientController {
 
     }
 
+    @GetMapping("/v1.0")
+    public List<Patient> getAllPatients(){
+        return this.patientService.getAllPatients();
+    }
 
+    @GetMapping("/v1.0/{patientId}")
+    public Patient getPatientById(@PathVariable("patientId") long patientId){
+        return this.patientService.getPatientById(patientId);
+    }
 
+    @GetMapping("/v1.0/filter")
+    public List<Patient> getPatientByContactNo(@RequestParam("contactNo") long contactNo){
+        return this.patientService.getPatientByContactNo(contactNo);
+    }
+
+    @PutMapping("/v1.0")
+    public Patient updatePatientByPatientId(@RequestParam("patientId") long patientId,@RequestParam("contactNo") long contactNo){
+        return this.patientService.updateContactNo(patientId,contactNo);
+    }
+
+    @DeleteMapping("/v1.0")
+    public ResponseEntity<GenericResponse> deletePatientByPatientId(@RequestParam("patientId") long patientId){
+        if(patientService.deletePatientById(patientId))
+            return ResponseEntity.status(HttpStatus.OK).body(new GenericResponse("Deleted"));
+        else
+            return ResponseEntity.status(HttpStatus.OK).body(new GenericResponse("Not Deleted"));
+    }
 }

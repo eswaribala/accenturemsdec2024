@@ -2,6 +2,10 @@
 #for multiple containers add docker-compose file @ project level
 # match application.properties db connection string with docker container service name and password
 # go to project folder in cmd
+#to create external network
+docker network create accenturenetwork
+#to list the available networks
+docker network ls
 #create docker image for project
 docker build -f dockerfile -t <imagename> .
 #start the containers

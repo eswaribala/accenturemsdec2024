@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: patientdeploy
+  name: patientdeploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patientdeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: patientdeploy
+    spec:
+      containers:
+      - image: eswaribala/accpatientrepo:patientapi
+        name: patientapp
+        resources: {}          
+        
+        env:
+            - name: MYSQL_URL
+              value: jdbc:mysql://mysql:3306/accpatientdb?useSSL=false
+      #imagePullSecrets:  
+      #- name: globalaks-key
+
+status: {}
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: patientservice
+  name: patientservice
+spec:
+    
+  ports:
+  - protocol: TCP
+    port: 7072
+    targetPort: 7072
+    name: http
+  
+  selector:
+    app: patientdeploy
+  type: LoadBalancer
+

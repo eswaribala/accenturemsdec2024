@@ -23,14 +23,17 @@ services:
     depends_on:
       - mysql
     deploy:
+      replicas: 3
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 15
         window: 50s
-    ports:
+    #ports:
        #- 8060-8070:7070
-        - 7072:7072
+       # - 7078:7072
+        #- 7074:7072
+        #- 7076:7072
     volumes:
       - /data/compose-app
     #networks:

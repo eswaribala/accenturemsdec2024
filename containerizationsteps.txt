@@ -9,6 +9,9 @@ clean install -DskipTests
 docker network create accenturenetwork
 #to list the available networks
 docker network ls
+#to remove existing image
+docker rmi <imagename>:latest
+
 #create docker image for project
 docker build -f dockerfile -t <imagename> .
 #start the containers

@@ -1,3 +1,6 @@
+#to build the java maven project
+clean install -DskipTests
+
 #add docker file at project level
 #for multiple containers add docker-compose file @ project level
 # match application.properties db connection string with docker container service name and password

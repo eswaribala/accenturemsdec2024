@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+
+  api-gateway:
+    image: apigateway
+    build:
+      context: ./
+      dockerfile: dockerfile
+
+    deploy:
+      #replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 15
+        window: 50s
+    ports:
+       - "8765:8765"
+       # - 7078:7072
+        #- 7074:7072
+        #- 7076:7072
+    volumes:
+      - /data/compose-app
+    #networks:
+      #- boanetwork   
+    
+
+### put all the networks here
+#networks:
+  #boanetwork:
+networks: 
+  default: 
+    external: 
+      name: accenturenetwork
+
+  

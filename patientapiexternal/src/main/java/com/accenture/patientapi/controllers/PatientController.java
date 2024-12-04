@@ -6,15 +6,18 @@ import com.accenture.patientapi.models.FullName;
 import com.accenture.patientapi.models.Patient;
 import com.accenture.patientapi.services.PatientService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("patients")
+@Slf4j
 public class PatientController {
 
     @Autowired
@@ -47,11 +50,14 @@ public class PatientController {
 
     @GetMapping("/v1.0")
     public List<Patient> getAllPatients(){
+
+        log.info("Retrieving Patient Data"+ LocalDate.now());
         return this.patientService.getAllPatients();
     }
 
     @GetMapping("/v1.0/{patientId}")
     public Patient getPatientById(@PathVariable("patientId") long patientId){
+        log.debug("Debug level log message");
         return this.patientService.getPatientById(patientId);
     }
 

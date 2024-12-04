@@ -8,9 +8,9 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
   instance:
-    hostname: localhost
+    hostname: host.docker.internal
     prefer-ip-address: true
-    ip-address: localhost
+    ip-address: host.docker.internal
 spring:
   application:
     name: gateway
@@ -25,7 +25,7 @@ spring:
           predicates:
             - Path=/swagger-ui.html, /v3/api-docs/**, /swagger-ui/**
           filters:
-            - RewritePath=/REGISTRATIONAPI/(?<segment>.*), /$\\{segment}
+            - RewritePath=/PATIENTAPI/(?<segment>.*), /$\\{segment}
       discovery:
         locator:
           enabled: true

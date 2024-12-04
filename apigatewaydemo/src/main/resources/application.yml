@@ -4,13 +4,13 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://eureka-server:8761/eureka
+      defaultZone: http://eureka-server:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
   instance:
-    hostname: host.docker.internal
+    hostname: localhost
     prefer-ip-address: true
-    ip-address: host.docker.internal
+    ip-address: localhost
 spring:
   application:
     name: gateway

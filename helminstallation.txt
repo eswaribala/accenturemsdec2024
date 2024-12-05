@@ -1,0 +1,191 @@
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+or
+#run this command from powershell
+
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+
+#install helm 
+
+choco install kubernetes-helm
+
+
+#Check helm version
+
+helm version
+
+#check helm repository list
+
+helm repo list
+
+#Add repository
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+#prometheus installation
+
+Step 1: Add the Prometheus Helm Chart Repository
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+Update your Helm repository:
+helm repo update
+Step 2:
+kubectl create namespace prometheus
+
+Step3:
+
+helm install prometheus prometheus-community/prometheus -n prometheus
+
+Step 4:
+
+helm list -n prometheus
+Step5:
+
+kubectl get pods -n prometheus
+Step6:
+
+Access Prometheus dashboard
+kubectl port-forward -n prometheus svc/prometheus-server 9090:80
+
+#test the prometheus
+#go to browser
+http://localhost:9090
+
+#if node exporter fails run the patch
+kubectl patch -n prometheus ds prometheus-prometheus-node-exporter --type "json" -p "[{"op": "remove", "path" : "/spec/template/spec/containers/0/volumeMounts/2/mountPropagation"}]"
+
+
+#download prometheus configuration file from current instance
+
+
+download values.yaml for modification
+helm show values prometheus-community/prometheus > values.yaml
+
+#grafana installation
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install my-grafana grafana/grafana
+kubectl get pods,svc
+kubectl port-forward service/my-grafana 3000:80
+#use bash script
+kubectl get secret --namespace default my-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+#expose grafana as service in localhost
+kubectl expose deployment --port 3000 my-grafana --type=LoadBalancer --name=grafanaservice
+#open grafana in browser
+#add first data source
+#select prometheus
+# URL will be
+http://host.docker.internal:9090
+
+#integrate java api metrics to prometheus for pull metrics
+ - job_name: 'customer-app'
+        metrics_path: '/actuator/prometheus'
+        static_configs:
+          - targets: ['host.docker.internal:7074']
+
+#after updating values.yaml file , send the updates to prometheus server
+
+helm upgrade prometheus prometheus-community/prometheus -f values.yaml -n prometheus
+
+#configure push gateway 
+# go to cmd line
+kubectl get svc -n prometheus
+#port forward prometheus gateway
+kubectl port-forward -n prometheus svc/<name push gateway service> 9091:9091
+
+#send temporary job metric to push gateway
+# open bash script
+echo "example_metric 42.42" | curl --data-binary @- http://localhost:9091/metrics/job/my_job
+
+#modify values.yaml to pull metrics from push gateway
+
+- job_name: 'pushgateway'
+        static_configs:
+          - targets: ['prometheus-prometheus-pushgateway.prometheus.svc:9091']
+
+#after save changes, run the following 
+
+
+helm upgrade prometheus prometheus-community/prometheus -f values.yaml -n prometheus
+
+
+#run node exporter
+kubectl get svc -n prometheus
+#select node exporter service name
+
+kubectl port-forward -n prometheus svc/<node exporter service name> 9100:9100
+
+#alert manager to run
+kubectl get svc -n prometheus
+kubectl port-forward -n prometheus svc/<alertmanagerservicename> 9093:9093
+
+#modify values.yml with alert rules
+
+helm upgrade prometheus prometheus-community/prometheus -f values.yaml -n prometheus
+#add alert manager as target for scrape_configs
+- job_name: 'alertmanagers'
+        static_configs:
+          - targets: ['prometheus-alertmanager:9093']
+
+
+helm upgrade prometheus prometheus-community/prometheus -f values.yaml -n prometheus
+
+#alert manager configurations
+kubectl get configmap -n prometheus
+#to see specific configuration file
+kubectl describe configmap prometheus-alertmanager -n prometheus
+
+#download alert manager configuration file local folder for further modification
+kubectl get configmap prometheus-alertmanager -n prometheus -o yaml > alertmanager-config.yaml
+
+#federation
+#create geographically separated
+helm install newyork-prometheus prometheus-community/prometheus --namespace newyork --create-namespace
+helm install london-prometheus prometheus-community/prometheus --namespace london --create-namespace
+#aggregation
+- job_name: 'global-view'
+        scrape_interval: 15s
+        honor_labels: true
+        metrics_path: '/federate'
+        params:
+         'match[]':
+           - '{__name__=~".+"}'  # Match all metrics, adjust as necessary
+        static_configs:
+          - targets: ['host.docker.internal:9080','host.docker.internal:9070']
+
+#aggregated alerting rules
+- alert: JobRequestRateSum
+           expr: sum(rate(http_server_requests_seconds_sum[24h])) by (outcome)
+           for: 2m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Job Request {{ $labels.instance }} is not running"
+             description: "Job Request {{ $labels.instance }} has been down for the last 2 minutes."
+
+#creating nginx exporter
+helm install nginx-exporter prometheus-community/prometheus-nginx-exporter -n prometheus
+#updated metrics in values.yml
+nginx:
+ status: 
+  enabled: true
+  port: 9113
+metrics:
+ enabled: true
+ path: /metrics
+ port: 9113
+ 
+#helm upgrade
+helm upgrade prometheus prometheus-community/prometheus -f values.yaml -n prometheus
+#statsd exporter
+helm install statsd-exporter prometheus-community/prometheus-statsd-exporter -n prometheus
+#expose exporter
+kubectl port-forward -n prometheus svc/statsd-exporter-prometheus-statsd-exporter -n prometheus  9102:9102
+# integrate statsd to prometheus
+- job_name: 'statsdexporter'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['host.docker.internal:9102']
+#update helm
+helm upgrade prometheus prometheus-community/prometheus -f values.yaml -n prometheus

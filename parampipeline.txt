@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+ 
+      tools {
+        maven 'maven'
+      }
+    parameters {
+        choice(
+            choices: ['windows' , 'linux'],
+            description: '',
+            name: 'REQUESTED_ACTION')
+    }
+
+    stages {
+        stage ('windows') {
+            when {
+                // Only say hello if a "greeting" is requested
+                expression { params.REQUESTED_ACTION == 'windows' }
+            }
+            steps {
+                echo "Maven using windows"
+                bat "mvn -version"
+            }
+        }
+        
+        stage ('linux') {
+            when {
+                // Only say hello if a "greeting" is requested
+                expression { params.REQUESTED_ACTION == 'linux' }
+            }
+            steps {
+                echo "Maven using linux"
+                sh "$NODE_NAME"
+            }
+        }
+    }
+}

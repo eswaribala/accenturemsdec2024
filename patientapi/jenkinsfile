@@ -1,4 +1,5 @@
 #!groovy
+def status = false
 pipeline{
  agent any
   tools {
@@ -15,5 +16,28 @@ pipeline{
              bat "cd patientapi & docker build -f dockerfile -t patientapiv15 ."
              }
          }
+   stage("dockerhub"){
+               steps{
+                  bat "docker tag patientapiv15:latest eswaribala/accpatientrepo:patientapiv15"
+                  bat "docker push eswaribala/accpatientrepo:patientapiv15"
+                  }
+              }
+   stage("mysqlpv"){
+                  steps{
+                     status=bat "cd patientapi & kubectl apply -f mysql-pv.yaml"
+
+                     }
+                 }
+   stage("mysqldeployment"){
+                     script{
+                        if(status){
+                          steps {
+                             bat "cd patientapi & kubectl apply -f mysql-deployment.yaml"
+                             echo "Deployment successful"
+                          }
+                          }
+                          }
+                   }
+
   }
  }

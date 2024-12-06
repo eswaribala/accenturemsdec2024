@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=accpatientdb
+
+    volumes:
+      - /data/mysql
+    healthcheck:        
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    #networks:
+      #- boanetwork
+  patient-api:
+    image: patientapi
+    build:
+      context: ./
+      dockerfile: dockerfile
+    depends_on:
+      - mysql
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 15
+        window: 50s
+    ports:
+       #- 8060-8070:7070
+        - 7072:7072
+    volumes:
+      - /data/compose-app
+    #networks:
+      #- boanetwork   
+    
+
+### put all the networks here
+#networks:
+  #boanetwork:
+networks: 
+  default: 
+    external: 
+      name: accenturenetwork
+
+  

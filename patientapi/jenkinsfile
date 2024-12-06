@@ -12,7 +12,7 @@ pipeline{
       }
    stage("dockerbuild"){
           steps{
-             bat "docker build -f ./patientapi/dockerfile -t patientapiv15 ."
+             bat "cd patientapi & docker build -f dockerfile -t patientapiv15 ."
              }
          }
   }

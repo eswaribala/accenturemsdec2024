@@ -24,8 +24,9 @@ pipeline{
               }
    stage("mysqlpv"){
                   steps{
+                    script{
                      status=bat "cd patientapi & kubectl apply -f mysql-pv.yaml"
-
+                        }
                      }
                  }
    stage("mysqldeployment"){

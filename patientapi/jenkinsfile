@@ -29,14 +29,21 @@ pipeline{
                      }
                  }
    stage("mysqldeployment"){
-                     script{
-                        if (status) {
+
+
                           steps {
-                             bat "cd patientapi & kubectl apply -f mysql-deployment.yaml"
-                             echo "Deployment successful"
+                            script{
+                              if (status) {
+
+                               bat "cd patientapi & kubectl apply -f mysql-deployment.yaml"
+                                                           echo "Deployment successful"
+                              }
+
+                               }
+
                           }
-                          }
-                          }
+
+
                    }
 
   }

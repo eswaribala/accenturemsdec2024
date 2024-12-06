@@ -30,7 +30,7 @@ pipeline{
                  }
    stage("mysqldeployment"){
                      script{
-                        if(status){
+                        if (status) {
                           steps {
                              bat "cd patientapi & kubectl apply -f mysql-deployment.yaml"
                              echo "Deployment successful"

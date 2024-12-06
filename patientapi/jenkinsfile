@@ -35,7 +35,7 @@ pipeline{
 
                           steps {
                             script{
-                              if (status) {
+                              if (status == null) {
 
                                bat "cd patientapi & kubectl apply -f mysql-deployment.yaml"
 

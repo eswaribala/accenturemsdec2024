@@ -16,7 +16,7 @@ services:
     #networks:
       #- boanetwork
   patient-api:
-    image: patientapi
+    image: patientapijaegerv1
     build:
       context: ./
       dockerfile: dockerfile
